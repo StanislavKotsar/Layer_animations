@@ -105,7 +105,7 @@ class ViewController: UIViewController {
     flyRight.toValue = view.bounds.size.width/2
     flyRight.duration = 0.5
     flyRight.fillMode = .both
-    
+    flyRight.delegate = self
     heading.layer.add(flyRight, forKey: nil)
     flyRight.beginTime = CACurrentMediaTime() + 0.3
     username.layer.add(flyRight, forKey: nil)
@@ -131,6 +131,8 @@ class ViewController: UIViewController {
     cloud3.layer.add(cloudAnimation, forKey: nil)
     cloudAnimation.beginTime = CACurrentMediaTime() + 1.1
     cloud4.layer.add(cloudAnimation, forKey: nil)
+    
+    
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -265,4 +267,11 @@ class ViewController: UIViewController {
     return true
   }
 
+}
+
+extension ViewController: CAAnimationDelegate {
+    func animationDidStop(_ anim: CAAnimation,
+                          finished flag: Bool) {
+        print("animation did finish")
+    }
 }
