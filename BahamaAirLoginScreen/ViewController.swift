@@ -144,9 +144,6 @@ class ViewController: UIViewController {
         password.layer.add(flyRight, forKey: nil)
         password.layer.position.x = view.bounds.size.width/2
         
-        loginButton.center.y += 30.0
-        loginButton.alpha = 0.0
-        
         let cloudAnimation = CABasicAnimation(keyPath: "opacity")
         cloudAnimation.fillMode = .backwards
         cloudAnimation.fromValue = 0
@@ -167,21 +164,29 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        let groupAnimation = CAAnimationGroup()
+        groupAnimation.timingFunction = CAMediaTimingFunction(
+            name: .easeIn)
+        groupAnimation.beginTime = CACurrentMediaTime() + 0.5
+        groupAnimation.duration = 0.5
+        groupAnimation.fillMode = .backwards
+        let scaleDown = CABasicAnimation(keyPath: "transform.scale")
+        scaleDown.fromValue = 3.5
+        scaleDown.toValue = 1.0
+        let rotate = CABasicAnimation(keyPath: "transform.rotation")
+        rotate.fromValue = .pi / 4.0
+        rotate.toValue = 0.0
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 0.0
+        fade.toValue = 1.0
+        groupAnimation.animations = [scaleDown, rotate, fade]
+        loginButton.layer.add(groupAnimation, forKey: nil)
         
         
-        UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.5,
-                       initialSpringVelocity: 0.0,
-                       animations: {
-                        self.loginButton.center.y -= 30.0
-                        self.loginButton.alpha = 1.0
-        },
-                       completion: nil
-        )
-        
-        animateCloud(cloud1)
-        animateCloud(cloud2)
-        animateCloud(cloud3)
-        animateCloud(cloud4)
+        animateCloud(layer: cloud1.layer)
+        animateCloud(layer: cloud2.layer)
+        animateCloud(layer: cloud3.layer)
+        animateCloud(layer: cloud4.layer)
     }
     
     func showMessage(index: Int) {
@@ -274,18 +279,23 @@ class ViewController: UIViewController {
         roundCorners(layer: loginButton.layer, toRadius: 25.0)
     }
     
-    func animateCloud(_ cloud: UIImageView) {
-        let cloudSpeed = 60.0 / view.frame.size.width
-        let duration = (view.frame.size.width - cloud.frame.origin.x) * cloudSpeed
-        UIView.animate(withDuration: TimeInterval(duration), delay: 0.0, options: .curveLinear,
-                       animations: {
-                        cloud.frame.origin.x = self.view.frame.size.width
-        },
-                       completion: {_ in
-                        cloud.frame.origin.x = -cloud.frame.size.width
-                        self.animateCloud(cloud)
-        }
-        )
+    func animateCloud(layer: CALayer) {
+        
+        //1
+        let cloudSpeed = 60.0 / Double(view.layer.frame.size.width)
+        let duration: TimeInterval = Double(
+            view.layer.frame.size.width - layer.frame.origin.x)
+            * cloudSpeed
+        
+        //2
+        let cloudMove = CABasicAnimation(keyPath: "position.x")
+        cloudMove.duration = duration
+        cloudMove.toValue = self.view.bounds.width +
+            layer.bounds.width/2
+        cloudMove.delegate = self
+        cloudMove.setValue("cloud", forKey: "name")
+        cloudMove.setValue(layer, forKey: "layer")
+        layer.add(cloudMove, forKey: nil)
     }
     
     // MARK: UITextFieldDelegate
@@ -314,6 +324,14 @@ extension ViewController: CAAnimationDelegate {
             pulse.toValue = 1.0
             pulse.duration = 0.25
             layer?.add(pulse, forKey: nil)
+        }
+        
+        if name == "cloud" {
+            guard let layer = anim.value(forKey: "layer") as? CALayer else { return }
+            layer.position.x = -layer.bounds.width/2
+            delay(seconds: 0.5) {
+                self.animateCloud(layer: layer)
+            }
         }
         
     }
