@@ -123,26 +123,29 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
+        let groupAnimation = CAAnimationGroup()
+        groupAnimation.delegate = self
+        groupAnimation.duration = 0.5
         let flyRight = CABasicAnimation(keyPath: "position.x")
-        flyRight.fromValue = -view.bounds.size.width/2
+        let fadeIn = CABasicAnimation(keyPath: "opacity")
+        flyRight.fromValue = -view.bounds.size.width
         flyRight.toValue = view.bounds.size.width/2
-        flyRight.duration = 0.5
-        flyRight.fillMode = .both
-        flyRight.delegate = self
-        flyRight.setValue("form", forKey: "name")
-        flyRight.setValue(heading.layer, forKey: "layer")
+        fadeIn.fromValue = 0.25
+        fadeIn.toValue = 1
+        groupAnimation.animations = [flyRight, fadeIn]
+        groupAnimation.setValue("form", forKey: "name")
         
-        heading.layer.add(flyRight, forKey: nil)
-        flyRight.beginTime = CACurrentMediaTime() + 0.3
-        flyRight.setValue(username.layer, forKey: "layer")
-        username.layer.add(flyRight, forKey: nil)
-        username.layer.position.x = view.bounds.size.width/2
+        groupAnimation.setValue(heading.layer, forKey: "layer")
+        heading.layer.add(groupAnimation, forKey: nil)
         
-        flyRight.beginTime = CACurrentMediaTime() + 0.4
-        flyRight.setValue(password.layer, forKey: "layer")
-        password.layer.add(flyRight, forKey: nil)
-        password.layer.position.x = view.bounds.size.width/2
+        groupAnimation.setValue(password.layer, forKey: "layer")
+        groupAnimation.beginTime = CACurrentMediaTime() + 0.3
+        password.layer.add(groupAnimation, forKey: nil)
+        
+        groupAnimation.setValue(username.layer, forKey: "layer")
+        groupAnimation.beginTime = CACurrentMediaTime() + 0.4
+        username.layer.add(groupAnimation, forKey: nil)
         
         let cloudAnimation = CABasicAnimation(keyPath: "opacity")
         cloudAnimation.fillMode = .backwards
