@@ -322,10 +322,11 @@ extension ViewController: CAAnimationDelegate {
             let layer = anim.value(forKey: "layer") as? CALayer
             anim.setValue(nil, forKey: "layer")
             
-            let pulse = CABasicAnimation(keyPath: "transform.scale")
+            let pulse = CASpringAnimation(keyPath: "transform.scale")
+            pulse.damping = 7.5
             pulse.fromValue = 1.25
             pulse.toValue = 1.0
-            pulse.duration = 0.25
+            pulse.duration = pulse.settlingDuration
             layer?.add(pulse, forKey: nil)
         }
         
