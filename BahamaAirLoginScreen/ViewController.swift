@@ -29,20 +29,28 @@ func delay(seconds: Double, completion: @escaping ()-> Void) {
 
 // A tint background color function
 func tintBackgroundColor(layer: CALayer, toColor: UIColor) {
-    let backgroundColorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+    let backgroundColorAnimation = CASpringAnimation(keyPath: "backgroundColor")
+    backgroundColorAnimation.initialVelocity = 10.0
+    backgroundColorAnimation.mass = 3.0
+    backgroundColorAnimation.stiffness = 700.0
+    backgroundColorAnimation.damping = 30.0
     backgroundColorAnimation.fromValue = layer.backgroundColor
     backgroundColorAnimation.toValue = toColor.cgColor
-    backgroundColorAnimation.duration = 1
+    backgroundColorAnimation.duration = backgroundColorAnimation.settlingDuration
     layer.add(backgroundColorAnimation, forKey: nil)
     layer.backgroundColor = toColor.cgColor
 }
 
 // A roundCorners function
 func roundCorners(layer: CALayer, toRadius: CGFloat) {
-    let cornerRadiusAnimation = CABasicAnimation(keyPath: "cornerRadius")
+    let cornerRadiusAnimation = CASpringAnimation(keyPath: "cornerRadius")
+    cornerRadiusAnimation.initialVelocity = 10.0
+    cornerRadiusAnimation.mass = 3.0
+    cornerRadiusAnimation.stiffness = 700.0
+    cornerRadiusAnimation.damping = 30.0
     cornerRadiusAnimation.fromValue = layer.cornerRadius
     cornerRadiusAnimation.toValue = toRadius
-    cornerRadiusAnimation.duration = 0.33
+    cornerRadiusAnimation.duration = cornerRadiusAnimation.settlingDuration
     layer.add(cornerRadiusAnimation, forKey: nil)
     layer.cornerRadius = toRadius
 }
